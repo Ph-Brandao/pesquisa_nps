@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empresa</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        function enviarNota(nota) {
+            const feedbackDiv = document.getElementById("feedback-div");
+            const mensagemDiv = document.getElementById("mensagem");
+            
+            if (nota < 10) {
+
+                feedbackDiv.style.display = "block";
+                feedbackDiv.dataset.nota = nota;
+            } else {
+
+                mensagemDiv.innerHTML = "Obrigado pela sua avaliação!";
+                mensagemDiv.style.display = "block";
+
+                fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nota: Number(nota) })
+                })
+                .then(response => response.ok ? console.log("Nota enviada com sucesso.") : console.error("Erro ao enviar a nota."))
+                .catch(error => console.error("Erro de conexão:", error));
+            }
+        }
+
+        function enviarFeedback() {
+            const feedbackDiv = document.getElementById("feedback-div");
+            const mensagemDiv = document.getElementById("mensagem");
+            const resposta = document.getElementById("feedback-text").value;
+            const nota = feedbackDiv.dataset.nota;
+
+            if (resposta.trim() === "") {
+                alert("Por favor, preencha o campo de feedback.");
+                return;
+            }
+
+            mensagemDiv.innerHTML = "Obrigado pelo feedback!";
+            mensagemDiv.style.display = "block";
+            feedbackDiv.style.display = "none";
+
+
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nota: Number(nota), feedback: resposta })
+            })
+            .then(response => response.ok ? console.log("Feedback enviado com sucesso.") : console.error("Erro ao enviar o feedback."))
+            .catch(error => console.error("Erro de conexão:", error));
+        }
+    </script>
+</head>
+<body>
+    <div class="topo">
+        <img src="/static/logo.png" alt="Logo da Empresa" class="logo">
+        <h1>Em uma escala de 0 a 10, quão provável é que você recomende nossa empresa a um amigo ou parente?</h1>
+    </div>
+
+    <div class="container">
+        <div class="nps-container">
+            <img 
+                src="/static/npspesquisa1.png" 
+                alt="Escala de Satisfação" 
+                usemap="#nps-map"
+            >
+            <map name="nps-map">
+                <area shape="rect" coords="11,81,62,115" alt="1" href="javascript:enviarNota(1)">
+                <area shape="rect" coords="93,83,140,114" alt="2" href="javascript:enviarNota(2)">
+                <area shape="rect" coords="176,83,221,115" alt="3" href="javascript:enviarNota(3)">
+                <area shape="rect" coords="255,81,304,114" alt="4" href="javascript:enviarNota(4)">
+                <area shape="rect" coords="338,81,387,115" alt="5" href="javascript:enviarNota(5)">
+                <area shape="rect" coords="417,80,469,115" alt="6" href="javascript:enviarNota(6)">
+                <area shape="rect" coords="529,81,580,115" alt="7" href="javascript:enviarNota(7)">
+                <area shape="rect" coords="612,81,665,115" alt="8" href="javascript:enviarNota(8)">
+                <area shape="rect" coords="721,81,772,115" alt="9" href="javascript:enviarNota(9)">
+                <area shape="rect" coords="804,81,855,115" alt="10" href="javascript:enviarNota(10)">
+            </map>
+        </div>
+
+        <div id="feedback-div" style="display: none;">
+            <p>O que poderia fazer você dar uma nota mais alta?</p>
+            <textarea id="feedback-text" rows="4" cols="50" placeholder="Digite seu feedback aqui..."></textarea>
+            <br>
+            <button onclick="enviarFeedback()">Enviar</button>
+        </div>
+
+        <div class="mensagem" id="mensagem" style="display: none;"></div>
+    </div>
+</body>
+</html>
